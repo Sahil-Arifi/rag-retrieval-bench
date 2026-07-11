@@ -1,0 +1,25 @@
+{"id":"q_001","query":"At what sustained inlet temperature does the North Loop enter amber thermal response?","relevant_doc_ids":["doc_001"]}
+{"id":"q_002","query":"Once the North Loop cools below its recovery temperature, how long must operators watch it before resetting ORBIT-7?","relevant_doc_ids":["doc_001"]}
+{"id":"q_003","query":"Which North Loop valve is the isolation control, and which similarly numbered valve must remain open as the drain?","relevant_doc_ids":["doc_001"]}
+{"id":"q_004","query":"What turbidity reading raises the water-polishing violet flag?","relevant_doc_ids":["doc_002"]}
+{"id":"q_005","query":"How long is the P-17 ceramic polishing bank flushed before restart checks?","relevant_doc_ids":["doc_002"]}
+{"id":"q_006","query":"In Juniper greenhouse operations, what does DNR stand for?","relevant_doc_ids":["doc_003"]}
+{"id":"q_007","query":"Which combination of leaf wetness and reservoir level cancels the 02:00 Juniper misting cycle?","relevant_doc_ids":["doc_003"]}
+{"id":"q_008","query":"What sustained relative humidity triggers the Cedar seed-vault amber response?","relevant_doc_ids":["doc_004"]}
+{"id":"q_009","query":"What should staff do when archival specimen envelopes start curling in the Cedar vault?","relevant_doc_ids":["doc_004"]}
+{"id":"q_010","query":"Where is a Kestrel rover battery placed after a drop, and which tag is attached?","relevant_doc_ids":["doc_005"]}
+{"id":"q_011","query":"How long must a Kestrel pack rest open-circuit before a low-voltage measurement?","relevant_doc_ids":["doc_005"]}
+{"id":"q_012","query":"At what remaining charge does a Tern drone start autonomous return?","relevant_doc_ids":["doc_006"]}
+{"id":"q_013","query":"What automatic recovery sequence follows two missed Tern position beacons?","relevant_doc_ids":["doc_006"]}
+{"id":"q_014","query":"After three missed Beacon radio check-ins on channel 4, what channel and code phrase are used?","relevant_doc_ids":["doc_007"]}
+{"id":"q_015","query":"Who may order station radio silence?","relevant_doc_ids":["doc_007"]}
+{"id":"q_016","query":"How long does Lantern retain raw telemetry packets?","relevant_doc_ids":["doc_008"]}
+{"id":"q_017","query":"What is Lantern's retention period for incident snapshots?","relevant_doc_ids":["doc_008"]}
+{"id":"q_018","query":"What happens to a visitor's access as soon as the badge sponsor withdraws approval?","relevant_doc_ids":["doc_009"]}
+{"id":"q_019","query":"Which areas can an orange logistics badge enter, and which areas are excluded?","relevant_doc_ids":["doc_009"]}
+{"id":"q_020","query":"Which acoustic pattern orders a muster at the Basalt storm shelter?","relevant_doc_ids":["doc_010"]}
+{"id":"q_021","query":"What fixed reference, rather than a magnetic compass, is used to align the Ridge weather vane?","relevant_doc_ids":["doc_011"]}
+{"id":"q_022","query":"Which wind or mast conditions invalidate a Ridge calibration?","relevant_doc_ids":["doc_011"]}
+{"id":"q_023","query":"What logger temperature and seal conditions allow a cold-chain parcel to be accepted?","relevant_doc_ids":["doc_012"]}
+{"id":"q_024","query":"Which procedures require two named people to approve an irreversible records deletion or battery disposal?","relevant_doc_ids":["doc_005","doc_008"]}
+{"id":"q_025","query":"Which procedures specify an uninterrupted twelve-minute wait before a reset or voltage measurement?","relevant_doc_ids":["doc_001","doc_005"]}
