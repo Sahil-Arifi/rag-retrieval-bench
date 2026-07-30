@@ -14,7 +14,7 @@ class ConfigurationError(ValueError):
 
 
 class ConfigModel(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(extra="forbid", frozen=True, str_strip_whitespace=True)
 
 
 class ModelConfig(ConfigModel):
@@ -75,6 +75,11 @@ class IndexConfig(ConfigModel):
 class EvaluationConfig(ConfigModel):
     k_values: list[int] = Field(min_length=1)
     primary_metric: str = Field(min_length=1)
+
+    @field_validator("primary_metric")
+    @classmethod
+    def normalize_primary_metric(cls, value: str) -> str:
+        return value.lower()
 
     @field_validator("k_values")
     @classmethod

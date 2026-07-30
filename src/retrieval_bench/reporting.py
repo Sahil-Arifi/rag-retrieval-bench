@@ -11,8 +11,8 @@ import matplotlib
 
 matplotlib.use("Agg")
 
-import matplotlib.pyplot as plt  # noqa: E402
-import pandas as pd  # noqa: E402
+import matplotlib.pyplot as plt
+import pandas as pd
 
 from retrieval_bench.models import BenchmarkResults, ExperimentResult
 
@@ -124,7 +124,8 @@ def _markdown_report(results: BenchmarkResults) -> str:
             *table,
             "",
             "Construction time includes document embedding and index construction. Query latency "
-            "includes single-query encoding, exact chunk search, and source-document deduplication. "
+            "includes single-query encoding, exact chunk search, and source-document "
+            "deduplication. "
             "Model loading, warmup, chunking, and report generation are excluded.",
             "",
             "## Runtime",
@@ -198,4 +199,3 @@ def write_reports(results: BenchmarkResults, output_directory: str | Path) -> di
     _atomic_write_text(paths["markdown"], _markdown_report(results))
     _write_plot(paths["plot"], results)
     return paths
-

@@ -5,7 +5,7 @@ from __future__ import annotations
 import platform
 import sys
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
 from time import perf_counter
 
@@ -150,7 +150,7 @@ def run_experiments(
             progress_callback(experiment_number, len(combinations), result)
 
     return BenchmarkResults(
-        generated_at=datetime.now(timezone.utc),
+        generated_at=datetime.now(UTC),
         primary_metric=config.evaluation.primary_metric.lower(),
         corpus_path=str(config.dataset.corpus),
         queries_path=str(config.dataset.queries),
@@ -158,4 +158,3 @@ def run_experiments(
         runtime=runtime_metadata(),
         results=experiment_results,
     )
-
