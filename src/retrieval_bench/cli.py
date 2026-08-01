@@ -72,7 +72,10 @@ def run(
             embedder = SentenceTransformerEmbedder(
                 benchmark_config.model.name,
                 batch_size=benchmark_config.model.batch_size,
-                max_sequence_length=max(benchmark_config.experiments.chunk_sizes),
+                max_sequence_length=(
+                    benchmark_config.model.max_sequence_length
+                    or max(benchmark_config.experiments.chunk_sizes)
+                ),
             )
 
         total = len(benchmark_config.experiments.combinations)
@@ -123,4 +126,3 @@ def run(
 
 if __name__ == "__main__":
     app()
-

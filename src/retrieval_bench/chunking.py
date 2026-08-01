@@ -11,7 +11,9 @@ from retrieval_bench.models import Chunk, Document
 class Tokenizer(Protocol):
     """The small subset of Hugging Face tokenizer behavior required by the chunker."""
 
-    def encode(self, text: str, *, add_special_tokens: bool = False) -> list[int]: ...
+    def encode(
+        self, text: str, *, add_special_tokens: bool = False, **kwargs: object
+    ) -> list[int]: ...
 
     def decode(
         self,
@@ -52,7 +54,12 @@ class TokenChunker:
 
     def chunk_document(self, document: Document) -> list[Chunk]:
         """Create stable chunk IDs and preserve source-document identity."""
-        token_ids = self.tokenizer.encode(document.text, add_special_tokens=False)
+        # Hugging Face warns when a full source document exceeds the model limit even though the
+        # purpose of this call is to split that document before embedding. ``verbose=False``
+        # suppresses only that misleading pre-chunk warning.
+        token_ids = self.tokenizer.encode(
+            document.text, add_special_tokens=False, verbose=False
+        )
         if not token_ids:
             raise ChunkingError(f"document {document.id!r} produced no tokens")
 

@@ -98,7 +98,9 @@ def run_experiments(
     active_embedder = embedder or SentenceTransformerEmbedder(
         config.model.name,
         batch_size=config.model.batch_size,
-        max_sequence_length=max(config.experiments.chunk_sizes),
+        max_sequence_length=(
+            config.model.max_sequence_length or max(config.experiments.chunk_sizes)
+        ),
     )
     factory = index_factory or (lambda: create_index(config.index.backend))
     active_embedder.warm_up()

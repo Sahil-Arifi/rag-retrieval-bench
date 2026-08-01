@@ -13,8 +13,11 @@ from retrieval_bench.models import Document
 class IntegerTokenizer:
     """A reversible tokenizer for text written as ``t0 t1 ...``."""
 
-    def encode(self, text: str, *, add_special_tokens: bool = False) -> list[int]:
+    def encode(
+        self, text: str, *, add_special_tokens: bool = False, **kwargs: object
+    ) -> list[int]:
         assert add_special_tokens is False
+        assert kwargs == {"verbose": False}
         return [int(token.removeprefix("t")) for token in text.split()]
 
     def decode(
@@ -56,7 +59,9 @@ class SelectivelyBlankTokenizer(IntegerTokenizer):
 
 
 class EmptyTokenizer(IntegerTokenizer):
-    def encode(self, text: str, *, add_special_tokens: bool = False) -> list[int]:
+    def encode(
+        self, text: str, *, add_special_tokens: bool = False, **kwargs: object
+    ) -> list[int]:
         return []
 
 
