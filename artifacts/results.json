@@ -1,0 +1,227 @@
+{
+  "generated_at": "2026-08-24T06:33:25.307740Z",
+  "primary_metric": "mrr@10",
+  "corpus_path": "data\\sample\\corpus.jsonl",
+  "queries_path": "data\\sample\\queries.jsonl",
+  "configuration": {
+    "model": {
+      "name": "sentence-transformers/all-MiniLM-L6-v2",
+      "batch_size": 64,
+      "normalize_embeddings": true,
+      "max_sequence_length": 512
+    },
+    "dataset": {
+      "corpus": "data\\sample\\corpus.jsonl",
+      "queries": "data\\sample\\queries.jsonl"
+    },
+    "experiments": {
+      "chunk_sizes": [
+        128,
+        256,
+        512
+      ],
+      "chunk_overlaps": [
+        0,
+        32,
+        64
+      ]
+    },
+    "index": {
+      "backend": "faiss"
+    },
+    "evaluation": {
+      "k_values": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "primary_metric": "mrr@10"
+    },
+    "output": {
+      "directory": "artifacts"
+    }
+  },
+  "runtime": {
+    "python": "3.11.16",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD",
+    "sentence-transformers": "6.0.0",
+    "torch": "2.13.0+cpu",
+    "faiss-cpu": "1.15.0",
+    "numpy": "2.4.6"
+  },
+  "results": [
+    {
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "index_backend": "faiss",
+      "chunk_size": 128,
+      "chunk_overlap": 0,
+      "number_of_chunks": 45,
+      "embedding_index_build_time_seconds": 0.3318199999630451,
+      "mean_query_latency_ms": 4.469292010180652,
+      "p95_query_latency_ms": 5.821139994077384,
+      "query_count": 25,
+      "metrics": {
+        "recall@1": 0.88,
+        "recall@3": 0.98,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr@10": 0.96,
+        "ndcg@10": 0.9644881765071068
+      }
+    },
+    {
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "index_backend": "faiss",
+      "chunk_size": 128,
+      "chunk_overlap": 32,
+      "number_of_chunks": 55,
+      "embedding_index_build_time_seconds": 0.38375680008903146,
+      "mean_query_latency_ms": 4.573363987728953,
+      "p95_query_latency_ms": 5.826179985888302,
+      "query_count": 25,
+      "metrics": {
+        "recall@1": 0.96,
+        "recall@3": 0.98,
+        "recall@5": 0.98,
+        "recall@10": 1.0,
+        "mrr@10": 1.0,
+        "ndcg@10": 0.9932621851833449
+      }
+    },
+    {
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "index_backend": "faiss",
+      "chunk_size": 128,
+      "chunk_overlap": 64,
+      "number_of_chunks": 75,
+      "embedding_index_build_time_seconds": 0.5189621000317857,
+      "mean_query_latency_ms": 4.775460003875196,
+      "p95_query_latency_ms": 6.19151999708265,
+      "query_count": 25,
+      "metrics": {
+        "recall@1": 0.88,
+        "recall@3": 0.98,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr@10": 0.96,
+        "ndcg@10": 0.9655629928992385
+      }
+    },
+    {
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "index_backend": "faiss",
+      "chunk_size": 256,
+      "chunk_overlap": 0,
+      "number_of_chunks": 27,
+      "embedding_index_build_time_seconds": 0.3845838999841362,
+      "mean_query_latency_ms": 4.917344003915787,
+      "p95_query_latency_ms": 6.254200055263936,
+      "query_count": 25,
+      "metrics": {
+        "recall@1": 0.8,
+        "recall@3": 0.98,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr@10": 0.92,
+        "ndcg@10": 0.9360373731849552
+      }
+    },
+    {
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "index_backend": "faiss",
+      "chunk_size": 256,
+      "chunk_overlap": 32,
+      "number_of_chunks": 27,
+      "embedding_index_build_time_seconds": 0.3928235999774188,
+      "mean_query_latency_ms": 4.796359990723431,
+      "p95_query_latency_ms": 6.109079928137361,
+      "query_count": 25,
+      "metrics": {
+        "recall@1": 0.96,
+        "recall@3": 0.98,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr@10": 1.0,
+        "ndcg@10": 0.995088612613522
+      }
+    },
+    {
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "index_backend": "faiss",
+      "chunk_size": 256,
+      "chunk_overlap": 64,
+      "number_of_chunks": 29,
+      "embedding_index_build_time_seconds": 0.4125429999548942,
+      "mean_query_latency_ms": 4.688367992639542,
+      "p95_query_latency_ms": 6.225359998643397,
+      "query_count": 25,
+      "metrics": {
+        "recall@1": 0.94,
+        "recall@3": 0.98,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr@10": 0.98,
+        "ndcg@10": 0.9849620208001535
+      }
+    },
+    {
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "index_backend": "faiss",
+      "chunk_size": 512,
+      "chunk_overlap": 0,
+      "number_of_chunks": 15,
+      "embedding_index_build_time_seconds": 0.46386370004620403,
+      "mean_query_latency_ms": 4.5185199892148376,
+      "p95_query_latency_ms": 5.885040038265288,
+      "query_count": 25,
+      "metrics": {
+        "recall@1": 0.9,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr@10": 0.96,
+        "ndcg@10": 0.9729742462875491
+      }
+    },
+    {
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "index_backend": "faiss",
+      "chunk_size": 512,
+      "chunk_overlap": 32,
+      "number_of_chunks": 15,
+      "embedding_index_build_time_seconds": 0.4661283000605181,
+      "mean_query_latency_ms": 5.328580006025732,
+      "p95_query_latency_ms": 7.479880051687359,
+      "query_count": 25,
+      "metrics": {
+        "recall@1": 0.94,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr@10": 0.98,
+        "ndcg@10": 0.9877370561446908
+      }
+    },
+    {
+      "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+      "index_backend": "faiss",
+      "chunk_size": 512,
+      "chunk_overlap": 64,
+      "number_of_chunks": 15,
+      "embedding_index_build_time_seconds": 0.46614250005222857,
+      "mean_query_latency_ms": 4.371467996388674,
+      "p95_query_latency_ms": 5.159179982729256,
+      "query_count": 25,
+      "metrics": {
+        "recall@1": 0.94,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr@10": 0.98,
+        "ndcg@10": 0.9877370561446908
+      }
+    }
+  ]
+}
