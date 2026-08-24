@@ -1,0 +1,23 @@
+model:
+  name: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 64
+  normalize_embeddings: true
+
+dataset:
+  corpus: data/sample/corpus.jsonl
+  queries: data/sample/queries.jsonl
+
+experiments:
+  chunk_sizes: [128, 256, 512]
+  chunk_overlaps: [0, 32, 64]
+
+index:
+  backend: faiss
+
+evaluation:
+  k_values: [1, 3, 5, 10]
+  primary_metric: mrr@10
+
+output:
+  directory: artifacts
+
