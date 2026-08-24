@@ -138,7 +138,11 @@ def _markdown_report(results: BenchmarkResults) -> str:
 
 def _write_plot(path: Path, results: BenchmarkResults) -> None:
     ranked = sort_results(results.results, results.primary_metric)
-    recall_metric = "recall@10"
+    recall_metrics = sorted(
+        (name for name in ranked[0].metrics if name.startswith("recall@")),
+        key=lambda name: int(name.split("@", maxsplit=1)[1]),
+    )
+    recall_metric = recall_metrics[0]
     fig, axis = plt.subplots(figsize=(9, 6))
     for result in ranked:
         axis.scatter(
@@ -154,9 +158,9 @@ def _write_plot(path: Path, results: BenchmarkResults) -> None:
             textcoords="offset points",
             fontsize=8,
         )
-    axis.set_title("Recall@10 versus mean query latency")
+    axis.set_title(f"{recall_metric.title()} versus mean query latency")
     axis.set_xlabel("Mean query latency (ms; lower is better)")
-    axis.set_ylabel("Recall@10 (higher is better)")
+    axis.set_ylabel(f"{recall_metric.title()} (higher is better)")
     axis.grid(alpha=0.25)
     fig.tight_layout()
     path.parent.mkdir(parents=True, exist_ok=True)
