@@ -21,6 +21,7 @@ class ModelConfig(ConfigModel):
     name: str = Field(min_length=1)
     batch_size: int = Field(gt=0)
     normalize_embeddings: Literal[True] = True
+    max_sequence_length: int | None = Field(default=None, gt=0)
 
 
 class DatasetConfig(ConfigModel):
@@ -112,6 +113,16 @@ class BenchmarkConfig(ConfigModel):
     index: IndexConfig = IndexConfig()
     evaluation: EvaluationConfig
     output: OutputConfig
+
+    @model_validator(mode="after")
+    def validate_model_input_budget(self) -> BenchmarkConfig:
+        configured_limit = self.model.max_sequence_length
+        largest_chunk = max(self.experiments.chunk_sizes)
+        if configured_limit is not None and configured_limit < largest_chunk:
+            raise ValueError(
+                "model max_sequence_length must be at least the largest configured chunk size"
+            )
+        return self
 
 
 def load_config(path: str | Path) -> BenchmarkConfig:

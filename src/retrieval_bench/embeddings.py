@@ -51,18 +51,20 @@ class SentenceTransformerEmbedder:
         self._model = SentenceTransformer(model_name, device=device)
         self.tokenizer = self._model.tokenizer
 
-        hard_limits: list[int] = []
         tokenizer_limit = getattr(self.tokenizer, "model_max_length", None)
-        if isinstance(tokenizer_limit, int) and tokenizer_limit < 1_000_000:
-            hard_limits.append(tokenizer_limit)
         try:
             position_limit = self._model[0].auto_model.config.max_position_embeddings
         except (AttributeError, IndexError, TypeError):
             position_limit = None
         if isinstance(position_limit, int):
-            hard_limits.append(position_limit)
-
-        architectural_limit = min(hard_limits) if hard_limits else self._model.max_seq_length
+            # SentenceTransformers may ship a conservative trained/default limit (MiniLM uses
+            # 256) below the underlying transformer's positional capacity (512). Extending the
+            # runtime limit is safe only up to the architecture's explicit position table.
+            architectural_limit = position_limit
+        elif isinstance(tokenizer_limit, int) and tokenizer_limit < 1_000_000:
+            architectural_limit = tokenizer_limit
+        else:
+            architectural_limit = self._model.max_seq_length
         requested_limit = max_sequence_length or self._model.max_seq_length
         if requested_limit > architectural_limit:
             raise EmbeddingError(
@@ -172,4 +174,3 @@ class FakeEmbedder:
 
     def warm_up(self) -> None:
         return None
-
