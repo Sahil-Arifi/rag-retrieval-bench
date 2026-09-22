@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Annotated
 
@@ -72,6 +73,7 @@ def run(
             embedder = SentenceTransformerEmbedder(
                 benchmark_config.model.name,
                 batch_size=benchmark_config.model.batch_size,
+                revision=benchmark_config.model.revision,
                 max_sequence_length=(
                     benchmark_config.model.max_sequence_length
                     or max(benchmark_config.experiments.chunk_sizes)
@@ -122,6 +124,42 @@ def run(
     console.print("Artifacts:")
     for artifact_path in paths.values():
         console.print(f"  {artifact_path}")
+
+
+@app.command("bm25")
+def bm25_command(
+    config: Annotated[Path, typer.Option("--config")] = Path("configs/default.yaml"),
+    output: Annotated[Path, typer.Option("--output")] = Path("artifacts/bm25.json"),
+) -> None:
+    """Evaluate a model-free BM25 baseline on the same corpus and query labels."""
+    from retrieval_bench.lexical import evaluate_bm25
+    from retrieval_bench.reporting import _atomic_write_text
+
+    try:
+        settings, documents, queries = _load_and_validate(config)
+        results = evaluate_bm25(documents, queries, k_values=settings.evaluation.k_values)
+        _atomic_write_text(output, json.dumps(results, indent=2, allow_nan=False) + "\n")
+    except (ConfigurationError, DatasetValidationError, ValueError, OSError) as exc:
+        console.print(f"[bold red]BM25 failed:[/bold red] {exc}")
+        raise typer.Exit(code=1) from exc
+    console.print(f"BM25 results: {output}")
+
+
+@app.command("import-beir")
+def import_beir_command(
+    source: Annotated[Path, typer.Argument(help="Local BEIR corpus/queries directory.")],
+    qrels: Annotated[Path, typer.Option("--qrels", help="Selected split's qrels TSV.")],
+    output: Annotated[Path, typer.Option("--output", help="New destination directory.")],
+) -> None:
+    """Convert local BEIR data; positive judgments become binary relevance."""
+    from retrieval_bench.beir import import_beir
+
+    try:
+        documents, queries = import_beir(source, qrels, output)
+    except (ValueError, KeyError, OSError) as exc:
+        console.print(f"[bold red]BEIR import failed:[/bold red] {exc}")
+        raise typer.Exit(code=1) from exc
+    console.print(f"Imported {documents} documents and {queries} queries into {output}")
 
 
 if __name__ == "__main__":

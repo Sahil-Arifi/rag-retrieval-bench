@@ -72,7 +72,7 @@ def test_write_reports_creates_valid_complete_artifacts(tmp_path: Path) -> None:
     frame = pd.read_csv(paths["csv"])
     assert frame.iloc[0]["chunk_size"] == 256
     report = paths["markdown"].read_text(encoding="utf-8")
-    assert "Demonstration dataset only" in report
+    assert "Dataset-specific measurements" in report
     assert "chunk size **256** with overlap **32**" in report
 
 

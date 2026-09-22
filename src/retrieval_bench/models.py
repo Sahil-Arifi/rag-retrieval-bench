@@ -77,6 +77,17 @@ class RetrievedChunk(StrictModel):
     rank: int = Field(ge=1)
 
 
+class QueryResult(StrictModel):
+    """Auditable document ranking and timing for one query; no source text copied."""
+
+    query_id: str
+    relevant_doc_ids: list[str]
+    ranked_doc_ids: list[str]
+    scores: list[float]
+    latency_ms: float = Field(ge=0, allow_inf_nan=False)
+    metrics: dict[str, float]
+
+
 class ExperimentResult(StrictModel):
     """Configuration, quality, timing, and scale measurements from one run."""
 
@@ -90,10 +101,11 @@ class ExperimentResult(StrictModel):
     p95_query_latency_ms: float = Field(ge=0)
     query_count: int = Field(gt=0)
     metrics: dict[str, float]
+    query_results: list[QueryResult] = Field(default_factory=list)
 
     def flattened(self) -> dict[str, Any]:
         """Return a CSV-friendly record with metric names promoted to columns."""
-        values = self.model_dump(exclude={"metrics"})
+        values = self.model_dump(exclude={"metrics", "query_results"})
         values.update(self.metrics)
         return values
 
@@ -108,3 +120,4 @@ class BenchmarkResults(StrictModel):
     configuration: dict[str, Any]
     runtime: dict[str, str]
     results: list[ExperimentResult]
+    provenance: dict[str, Any] = Field(default_factory=dict)

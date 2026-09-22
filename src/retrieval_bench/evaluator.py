@@ -20,8 +20,10 @@ from retrieval_bench.models import (
     BenchmarkResults,
     Document,
     ExperimentResult,
+    QueryResult,
     RetrievalQuery,
 )
+from retrieval_bench.provenance import build_provenance
 from retrieval_bench.retrieval import Retriever
 
 Clock = Callable[[], float]
@@ -98,6 +100,7 @@ def run_experiments(
     active_embedder = embedder or SentenceTransformerEmbedder(
         config.model.name,
         batch_size=config.model.batch_size,
+        revision=config.model.revision,
         max_sequence_length=(
             config.model.max_sequence_length or max(config.experiments.chunk_sizes)
         ),
@@ -123,6 +126,7 @@ def run_experiments(
         rankings: list[list[str]] = []
         relevant_documents: list[list[str]] = []
         query_latencies_ms: list[float] = []
+        query_results: list[QueryResult] = []
 
         for query in queries:
             query_started = clock()
@@ -130,6 +134,18 @@ def run_experiments(
             query_latencies_ms.append((clock() - query_started) * 1_000)
             rankings.append([hit.doc_id for hit in hits])
             relevant_documents.append(query.relevant_doc_ids)
+            query_results.append(
+                QueryResult(
+                    query_id=query.id,
+                    relevant_doc_ids=query.relevant_doc_ids,
+                    ranked_doc_ids=rankings[-1],
+                    scores=[hit.score for hit in hits],
+                    latency_ms=query_latencies_ms[-1],
+                    metrics=_evaluate_quality(
+                        [rankings[-1]], [query.relevant_doc_ids], config.evaluation.k_values
+                    ),
+                )
+            )
 
         result = ExperimentResult(
             model_name=active_embedder.model_name,
@@ -143,6 +159,7 @@ def run_experiments(
                 np.percentile(query_latencies_ms, 95, method="linear")
             ),
             query_count=len(queries),
+            query_results=query_results,
             metrics=_evaluate_quality(
                 rankings, relevant_documents, config.evaluation.k_values
             ),
@@ -158,5 +175,11 @@ def run_experiments(
         queries_path=str(config.dataset.queries),
         configuration=config.model_dump(mode="json"),
         runtime=runtime_metadata(),
+        provenance=build_provenance(
+            documents,
+            queries,
+            model_name=active_embedder.model_name,
+            model_revision=getattr(active_embedder, "model_revision", None),
+        ),
         results=experiment_results,
     )

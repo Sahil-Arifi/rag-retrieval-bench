@@ -216,3 +216,11 @@ def test_evaluator_ranks_unique_source_documents_instead_of_repeated_chunks() ->
     assert result.metrics["recall@10"] == 1.0
     assert result.metrics["mrr@10"] == pytest.approx(0.5)
     assert result.metrics["ndcg@10"] == pytest.approx(1 / math.log2(3))
+    evidence = result.query_results[0]
+    assert evidence.query_id == "q_target"
+    assert evidence.ranked_doc_ids == ["doc_noise", "doc_relevant", "doc_other"]
+    assert evidence.relevant_doc_ids == ["doc_relevant"]
+    assert evidence.latency_ms == pytest.approx(1000 / 1024)
+    assert evidence.metrics == result.metrics
+    assert len(evidence.scores) == len(evidence.ranked_doc_ids)
+    assert "query_results" not in result.flattened()

@@ -132,6 +132,7 @@ overlapping vocabulary.
 ```yaml
 model:
   name: sentence-transformers/all-MiniLM-L6-v2
+  revision: 1110a243fdf4706b3f48f1d95db1a4f5529b4d41
   batch_size: 64
   normalize_embeddings: true
   max_sequence_length: 512
@@ -166,6 +167,44 @@ explicitly sets 512, verifies that architectural limit at runtime, and refuses s
 truncation or any larger configured input.
 
 ## Verified sample benchmark
+
+### Auditable evidence and external datasets
+
+New dense runs retain each query's document ranking, scores, relevance labels, metrics,
+and latency in `results.json`. They also record canonical hashes of the actual parsed
+corpus and queries, the executing Git commit and dirty state when available, and model
+identity. The default configuration pins an immutable Hugging Face model commit. Custom
+configs can omit a revision, but their provenance explicitly marks the model unpinned.
+Old committed artifacts remain historical and have not been retroactively enriched.
+
+To evaluate a local BEIR dataset, import its selected split without downloading anything:
+
+```bash
+uv run retrieval-bench import-beir /path/to/beir-dataset \
+  --qrels /path/to/beir-dataset/qrels/test.tsv --output data/external/example
+```
+
+Copy `configs/default.yaml`, point `dataset.corpus` and `dataset.queries` at the imported
+files, and choose a new output directory. The importer retains the complete corpus,
+including negatives, and evaluates only queries with positive judgments in the selected
+qrels file. Scores greater than zero become **binary** relevance, matching this harness's
+metrics; graded relevance information is intentionally not retained. The destination must
+be new. Dataset licensing and provenance remain the operator's responsibility.
+
+Compare dense retrieval with an independent lexical reference using the same config:
+
+```bash
+uv run retrieval-bench bm25 --config configs/default.yaml --output artifacts/bm25.json
+uv run retrieval-bench run --config configs/default.yaml
+```
+
+The baseline implements Okapi BM25 (`k1=1.2`, `b=0.75`) over complete documents using
+casefolded Unicode word tokens and the same text field used by dense retrieval. It records
+the same document/query hashes and per-query evidence. BM25 uses no model,
+stemming, stopword list, or network download. It is a transparent reference, not a claim
+of parity with a tuned search engine. Neither a BEIR importer nor this baseline establishes
+new real-dataset benchmark results; the published measurements below remain the original
+fictional sample. Exact dense all-chunk search still limits practical corpus size.
 
 The table below comes from an actual local run on 2026-08-23 using Python 3.11.16,
 SentenceTransformers 6.0.0, CPU-only PyTorch 2.13.0, FAISS CPU 1.15.0, and NumPy 2.4.6 on
