@@ -106,8 +106,8 @@ def _markdown_report(results: BenchmarkResults) -> str:
         [
             "# Retrieval benchmark report",
             "",
-            "> **Demonstration dataset only.** These measurements verify the evaluation pipeline; "
-            "they are not a statistically meaningful or general model benchmark.",
+            "> **Dataset-specific measurements.** Interpret results using the dataset provenance "
+            "and sample size. A single local run does not establish general model performance.",
             "",
             f"Generated: `{results.generated_at.isoformat()}`",
             "",

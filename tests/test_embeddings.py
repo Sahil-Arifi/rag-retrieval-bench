@@ -36,8 +36,11 @@ class StubTokenizer:
 class StubSentenceTransformer:
     last_instance: StubSentenceTransformer | None = None
 
-    def __init__(self, model_name: str, device: str | None = None) -> None:
+    def __init__(
+        self, model_name: str, device: str | None = None, revision: str | None = None
+    ) -> None:
         del model_name, device
+        self.revision = revision
         self.tokenizer = StubTokenizer()
         self._max_seq_length = 256
         self.auto_model = SimpleNamespace(
@@ -130,7 +133,13 @@ def test_fake_embedder_is_deterministic_and_model_free() -> None:
     assert first.encode_documents(texts).shape == (2, 32)
 
 
+def test_production_adapter_forwards_pinned_revision(stub_sentence_transformers: None) -> None:
+    revision = "a" * 40
+    embedder = SentenceTransformerEmbedder("stub", revision=revision)
+    assert embedder.model_revision == revision
+    assert StubSentenceTransformer.last_instance.revision == revision
+
+
 def test_fake_embedder_rejects_invalid_dimension() -> None:
     with pytest.raises(ValueError, match="dimension must be positive"):
         FakeEmbedder(dimension=0)
-

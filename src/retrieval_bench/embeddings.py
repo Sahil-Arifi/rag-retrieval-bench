@@ -42,13 +42,15 @@ class SentenceTransformerEmbedder:
         batch_size: int = 64,
         max_sequence_length: int | None = None,
         device: str | None = None,
+        revision: str | None = None,
     ) -> None:
         # Kept local so importing the package or running unit tests never loads a model.
         from sentence_transformers import SentenceTransformer
 
         self.model_name = model_name
         self.batch_size = batch_size
-        self._model = SentenceTransformer(model_name, device=device)
+        self.model_revision = revision
+        self._model = SentenceTransformer(model_name, device=device, revision=revision)
         self.tokenizer = self._model.tokenizer
 
         tokenizer_limit = getattr(self.tokenizer, "model_max_length", None)

@@ -20,4 +20,4 @@ Thumbs.db
 .hf_home/
 models/
 artifacts/*.tmp
-
+data/external/
