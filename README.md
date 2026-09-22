@@ -17,6 +17,8 @@ retrieval metrics from first principles, and generates machine- and human-readab
 > The included 12-document Asteria corpus is fictional demonstration data. Its results
 > verify that the evaluation pipeline works; they are **not statistically meaningful** and
 > must not be presented as a general benchmark of the embedding model.
+> A separate [SciFact evaluation](#external-evaluation-scifact) now compares dense retrieval
+> and BM25 on 5,183 documents and 300 externally labeled test queries.
 
 ## Why retrieval evaluation matters
 
@@ -166,9 +168,7 @@ of 256 tokens, while its underlying transformer exposes 512 positional slots. Th
 explicitly sets 512, verifies that architectural limit at runtime, and refuses silent
 truncation or any larger configured input.
 
-## Verified sample benchmark
-
-### Auditable evidence and external datasets
+## Auditable evidence and external datasets
 
 New dense runs retain each query's document ranking, scores, relevance labels, metrics,
 and latency in `results.json`. They also record canonical hashes of the actual parsed
@@ -202,9 +202,61 @@ The baseline implements Okapi BM25 (`k1=1.2`, `b=0.75`) over complete documents 
 casefolded Unicode word tokens and the same text field used by dense retrieval. It records
 the same document/query hashes and per-query evidence. BM25 uses no model,
 stemming, stopword list, or network download. It is a transparent reference, not a claim
-of parity with a tuned search engine. Neither a BEIR importer nor this baseline establishes
-new real-dataset benchmark results; the published measurements below remain the original
-fictional sample. Exact dense all-chunk search still limits practical corpus size.
+of parity with a tuned search engine. The SciFact run below is a separate measured comparison;
+the original fictional sample remains available afterward. Exact dense all-chunk search still
+limits practical corpus size.
+
+## External evaluation: SciFact
+
+A single CPU evaluation on **2026-09-22** used the public BEIR SciFact **test** split:
+**5,183 documents and 300 labeled queries**, with the full corpus retained as candidates.
+Both methods use the same document **text** (excluding titles), query IDs, and binary
+relevance judgments. The imported record hashes match across both artifacts.
+
+| Method | Recall@1 | Recall@3 | Recall@5 | Recall@10 | MRR@10 | nDCG@10 |
+|---|---:|---:|---:|---:|---:|---:|
+| BM25, `k1=1.2`, `b=0.75` | 0.5015 | 0.6673 | 0.7101 | 0.7715 | **0.6151** | **0.6472** |
+| MiniLM, 256-token chunks / 32 overlap | 0.4692 | 0.6479 | 0.7264 | **0.7899** | 0.5944 | 0.6378 |
+
+BM25 scored higher on MRR@10 and nDCG@10;
+the dense configuration retrieved a larger fraction of relevant documents by rank 10.
+This is a useful baseline comparison, with no claim that either method is generally better.
+Only one dense configuration was evaluated; there was no SciFact tuning sweep, training,
+repeated trial, confidence interval, or significance test. These settings differ from other
+BEIR systems, including the title-plus-text convention and tuned lexical engines, so the
+numbers should not be compared directly with a leaderboard.
+
+The dense run used pinned MiniLM revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`,
+9,054 chunks, and exact FAISS search. It recorded a 528.104-second embedding/index build,
+27.254-ms mean query latency, and 47.469-ms p95 on a shared Linux CPU container. Those
+latencies are a single local observation; raw query timings include outliers and do not
+establish a production speed advantage. Full runtime versions and timing boundaries are
+in the [dense report](artifacts/scifact/dense-report.md).
+
+Evidence: [dense rankings and provenance](artifacts/scifact/dense.json),
+[BM25 rankings and provenance](artifacts/scifact/bm25.json),
+[dataset URL/checksums and run notes](artifacts/scifact/source.json), and
+[configuration](configs/scifact.yaml). Every query includes document IDs, scores, labels,
+metrics, and timing. Dataset text is not committed.
+
+To reproduce, obtain and extract the public
+[BEIR SciFact archive](https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/scifact.zip)
+to `data/external/scifact_beir`. Verify its SHA-256 against `artifacts/scifact/source.json`,
+then run from the repository root (the imported destination must not already exist):
+
+```bash
+uv run retrieval-bench import-beir data/external/scifact_beir \
+  --qrels data/external/scifact_beir/qrels/test.tsv --output data/external/scifact
+uv run retrieval-bench bm25 --config configs/scifact.yaml \
+  --output data/external/scifact_results/bm25.json
+uv run retrieval-bench run --config configs/scifact.yaml
+```
+
+The dense run used `OMP_NUM_THREADS=4`, `MKL_NUM_THREADS=4`, and `OPENBLAS_NUM_THREADS=4`.
+Model weights download on first use; the recorded source commit and clean working-tree
+state describe the executed code, which was later merged without source changes.
+
+## Verified sample benchmark
 
 The table below comes from an actual local run on 2026-08-23 using Python 3.11.16,
 SentenceTransformers 6.0.0, CPU-only PyTorch 2.13.0, FAISS CPU 1.15.0, and NumPy 2.4.6 on
@@ -250,11 +302,11 @@ uv run pytest
 uv run ruff check .
 ```
 
-Verified locally:
+Verified offline test suite (also exercised by CI):
 
 ```text
-84 passed in 1.57s
-Required test coverage of 85% reached. Total coverage: 91.15%
+102 passed (offline test suite)
+Required test coverage of 85% reached. Total coverage: 92.35%
 All checks passed!
 ```
 
@@ -319,11 +371,13 @@ Tests cover:
 
 - The synthetic corpus is tiny, domain-specific, and deliberately answerable. It cannot
   estimate production quality or compare embedding models generally.
-- Latencies are one local CPU pass with no repeated trials, confidence intervals, concurrency,
+- SciFact adds one external dataset and one dense/BM25 comparison; it does not establish
+  generalization across domains or statistical significance.
+- Latencies are one local CPU pass per dataset with no repeated trials, confidence intervals, concurrency,
   cold-cache study, or GPU measurements.
 - Exact all-chunk search produces a correct document ranking for this harness but does not
   scale to millions of chunks; adaptive over-fetch or document-aware ANN retrieval is needed.
-- Only one dense encoder and cosine retrieval are benchmarked. There is no BM25/hybrid stage,
+- Only one dense encoder is used. A separate BM25 baseline is available; there is no hybrid stage,
   approximate index, metadata filtering, cross-encoder reranking, or end-to-end generation.
 - The 512-token experiment deliberately extends MiniLM from its packaged 256-token default to
   its verified 512-position architecture. A natively trained long-context encoder is a better
@@ -335,7 +389,7 @@ The highest-value next feature is a **BEIR-compatible multi-dataset runner with 
 and bootstrap confidence intervals**. That would turn the harness from a pipeline demonstration
 into evidence across domains while preserving the same document-level evaluation contracts.
 
-Further extensions include ANN/HNSW indexes, BM25 and hybrid retrieval, cross-encoder reranking,
+Further extensions include ANN/HNSW indexes, hybrid retrieval, cross-encoder reranking,
 query/document prompt strategies, metadata filters, memory profiling, and paired significance
 tests between configurations.
 
