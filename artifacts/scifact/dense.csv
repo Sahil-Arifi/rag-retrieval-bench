@@ -1,0 +1,2 @@
+model_name,index_backend,chunk_size,chunk_overlap,number_of_chunks,embedding_index_build_time_seconds,mean_query_latency_ms,p95_query_latency_ms,query_count,recall@1,recall@3,recall@5,recall@10,mrr@10,ndcg@10
+sentence-transformers/all-MiniLM-L6-v2,faiss,256,32,9054,528.103712,27.254493,47.468826,300,0.469167,0.647889,0.726444,0.789889,0.594389,0.637761

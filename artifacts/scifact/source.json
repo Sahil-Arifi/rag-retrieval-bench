@@ -1,0 +1,23 @@
+{
+  "url": "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/scifact.zip",
+  "zip_sha256": "536e14446a0ba56ed1398ab1055f39fe852686ecad24a6306c80c490fa8e0165",
+  "zip_md5": "5f7d1de60b170fc8027bb7898e2efca1",
+  "bytes": 2816079,
+  "dataset": "BEIR SciFact",
+  "split": "test",
+  "dataset_catalog": "https://github.com/beir-cellar/beir",
+  "evaluated_at_utc": "2026-09-22",
+  "document_count": 5183,
+  "query_count": 300,
+  "relevance": "positive qrels interpreted as binary; complete corpus retained",
+  "retrieval_fields": "text only; title excluded for both methods",
+  "source_commit": "8fd415475f886a814860fcbb032c474a4b24ff81",
+  "dense_model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "dense_thread_environment": {
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4"
+  },
+  "environment_note": "Shared Linux x86_64 CPU container, 8-CPU quota. socksio installed only in the local environment for the sandbox network proxy; it is not a benchmark dependency. No dedicated hardware or repeated latency trials.",
+  "configuration_selection": "One dense configuration (256 tokens, overlap 32); no tuning sweep or model training performed for this comparison."
+}

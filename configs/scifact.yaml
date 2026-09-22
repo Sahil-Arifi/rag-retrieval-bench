@@ -1,0 +1,25 @@
+model:
+  name: sentence-transformers/all-MiniLM-L6-v2
+  revision: 1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+  batch_size: 64
+  normalize_embeddings: true
+  max_sequence_length: 512
+dataset:
+  corpus: data/external/scifact/corpus.jsonl
+  queries: data/external/scifact/queries.jsonl
+experiments:
+  chunk_sizes:
+  - 256
+  chunk_overlaps:
+  - 32
+index:
+  backend: faiss
+evaluation:
+  k_values:
+  - 1
+  - 3
+  - 5
+  - 10
+  primary_metric: mrr@10
+output:
+  directory: data/external/scifact_results
